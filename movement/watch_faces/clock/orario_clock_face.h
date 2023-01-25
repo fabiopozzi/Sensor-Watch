@@ -22,27 +22,32 @@
  * SOFTWARE.
  */
 
-#ifndef MOVEMENT_CONFIG_H_
-#define MOVEMENT_CONFIG_H_
+#ifndef ORARIO_CLOCK_FACE_H_
+#define ORARIO_CLOCK_FACE_H_
 
-#include "movement_faces.h"
+#include "movement.h"
 
-const watch_face_t watch_faces[] = {
-    simple_clock_face,
-    orario_clock_face,
-    sunrise_sunset_face,
-    thermistor_readout_face,
-    preferences_face,
-    set_time_face,
-};
+typedef struct {
+    uint32_t previous_date_time;
+    uint8_t last_battery_check;
+    uint8_t watch_face_index;
+    bool signal_enabled;
+    bool battery_low;
+    bool alarm_enabled;
+} orario_clock_state_t;
 
-#define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
+void orario_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
+void orario_clock_face_activate(movement_settings_t *settings, void *context);
+bool orario_clock_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
+void orario_clock_face_resign(movement_settings_t *settings, void *context);
+bool orario_clock_face_wants_background_task(movement_settings_t *settings, void *context);
 
-/* Determines what face to go to from the first face if you've already set 
- * a mode long press to go to the first face in preferences, and
- * excludes these faces from the normal rotation.
- * Usually it makes sense to set this to the preferences face.
- */
-#define MOVEMENT_SECONDARY_FACE_INDEX 0 // or (MOVEMENT_NUM_FACES - 2)
+#define orario_clock_face ((const watch_face_t){ \
+    orario_clock_face_setup, \
+    orario_clock_face_activate, \
+    orario_clock_face_loop, \
+    orario_clock_face_resign, \
+    orario_clock_face_wants_background_task, \
+})
 
-#endif // MOVEMENT_CONFIG_H_
+#endif // ORARIO_CLOCK_FACE_H_
